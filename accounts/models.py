@@ -14,6 +14,8 @@ class CustomUser(AbstractUser):
 
     email = models.CharField(max_length=100, unique=True)
 
+
+
     date_of_birth = models.CharField(max_length=20)
 
     phone_number = models.CharField(max_length=30, unique=True, null=True)
