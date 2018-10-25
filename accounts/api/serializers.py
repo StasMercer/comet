@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from django.conf import settings
 from accounts.models import CustomUser
 
 
@@ -14,13 +13,28 @@ class UserSerializer(serializers.ModelSerializer):
             )
     password = serializers.CharField(min_length=6)
 
-    date_of_birth = serializers.DateField()
+    date_of_birth = serializers.CharField(max_length=20)
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(validated_data['username'], validated_data['email'],
-             validated_data['password'])
+        user = CustomUser.objects.create_user(**validated_data)
         return user
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'password','date_of_birth')
+        fields = ('id', 'username', 'email', 'password', 'date_of_birth')
+
+
+class UserCheckSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=CustomUser.objects.all())]
+    )
+    username = serializers.CharField(
+        validators=[UniqueValidator(queryset=CustomUser.objects.all())]
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
+
+

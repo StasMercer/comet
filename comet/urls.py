@@ -17,10 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken import views
 from .router import router
-
+from .views import frontend
+from accounts import views as acc_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('', include(router.urls)),
+    path('api/check-user/<str:username>,<str:email>/', acc_views.check_user),
+    path('api/verify-email/<str:email>/', acc_views.verify_email),
+    path('accounts/', include('accounts.urls')),
     path('api-token-auth/', views.obtain_auth_token, name='api-token-auth'),
 ]

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from django.urls import reverse_lazy
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -43,7 +45,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_json_api',
     'corsheaders',
-
+    'rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django.contrib.sites',
     'accounts',
 ]
 
@@ -60,7 +66,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'comet.urls'
-
+SITE_ID = 1
+AUTHENTICATION_BACKENDS = (
+    # default
+)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -139,6 +148,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+DEFAULT_FROM_EMAIL = 'pro100.stas.ru@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pro100.stas.ru@gmail.com'
+EMAIL_HOST_PASSWORD = 'hqoubogwfhscgemz'
+EMAIL_USE_TLS = True
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
