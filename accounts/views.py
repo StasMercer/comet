@@ -16,36 +16,38 @@ def null_view(request):
 
 
 @api_view(['GET',])
-def check_user(request, username, email):
+def check_username(request, username=None):
 
+    print(request.user)
 
     if username:
         user = CustomUser.objects.filter(username__iexact=username)
         if user:
             return Response('username is used')
+    return Response('username is unique')
 
-    if email:
+
+@api_view(['GET',])
+def check_email(request, email=None):
+
+    try:
+        validate_email(email)
+        valid_email = True
+    except ValidationError:
+        valid_email = False
+    print(valid_email)
+    if valid_email:
         user = CustomUser.objects.filter(email__iexact=email)
         if user:
             return Response('email is used')
+    else:
+        return Response('email not valid')
 
-    return Response('all fields unique')
+    return Response('email is unique')
 
-
-class UserCheckApiView(generics.ListCreateAPIView):
-    serializer_class = UserCheckSerializer
-    lookup_field = 'username'
-
-    def post(self, request, format=None):
-        print(request)
-        return Response("ok")
-
-    def get_queryset(self):
-        return CustomUser.objects.all()
 
 @api_view()
 def verify_email(request, email):
-
 
     try:
         validate_email(email)

@@ -1,8 +1,10 @@
+from requests import Response
 from rest_framework import viewsets
 from accounts.models import CustomUser
 from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework import generics
+from rest_framework.decorators import action
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -14,5 +16,6 @@ class UserViewSet(viewsets.ModelViewSet):
             self.permission_classes = (AllowAny,)
 
         return super(UserViewSet, self).get_permissions()
+
 
 
