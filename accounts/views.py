@@ -1,25 +1,17 @@
 from django.core.exceptions import ValidationError
-from rest_framework import status, generics
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.core.validators import validate_email
 from django.core.mail import send_mail
-from rest_framework.validators import UniqueValidator
-from django.db import models
 import random
-
-from accounts.api.serializers import UserCheckSerializer
+from rest_framework.permissions import AllowAny
 from .models import CustomUser
-@api_view()
-def null_view(request):
-    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET',])
+@permission_classes((AllowAny, ))
 def check_username(request, username=None):
-
     print(request.user)
-
     if username:
         user = CustomUser.objects.filter(username__iexact=username)
         if user:
@@ -28,6 +20,7 @@ def check_username(request, username=None):
 
 
 @api_view(['GET',])
+@permission_classes((AllowAny, ))
 def check_email(request, email=None):
 
     try:
@@ -47,6 +40,7 @@ def check_email(request, email=None):
 
 
 @api_view()
+@permission_classes((AllowAny, ))
 def verify_email(request, email):
 
     try:
@@ -68,7 +62,7 @@ def verify_email(request, email):
             fail_silently=False,
         )
 
-        return Response({'detail': 'email sent to '+email, 'verification_code:': str(rand_num)})
+        return Response({'detail': 'email sent to '+email, 'verification_code': str(rand_num)})
 
     else:
         return Response('email not valid')

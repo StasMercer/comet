@@ -1,7 +1,8 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse, render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-@api_view(['GET', 'POST', ])
-def frontend(request, key):
-    return Response('email authentificated: ' + key)
+
+def frontend(request):
+    return render(request, 'frontend/signup/index.html')
+

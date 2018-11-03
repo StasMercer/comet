@@ -24,17 +24,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'password', 'date_of_birth')
 
 
-class UserCheckSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=CustomUser.objects.all())]
-    )
-    username = serializers.CharField(
-        validators=[UniqueValidator(queryset=CustomUser.objects.all())]
-    )
 
-    class Meta:
-        model = CustomUser
-        fields = ('username', 'email')
 
 

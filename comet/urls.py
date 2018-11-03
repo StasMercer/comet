@@ -17,12 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken import views
 from .router import router
-from .views import frontend
-from accounts import views as acc_views
+from django.views.generic import TemplateView
+
+
 urlpatterns = [
+    path('events/', include('events.urls')),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('', include(router.urls)),
     path('accounts/', include('accounts.urls')),
     path('api-token-auth/', views.obtain_auth_token, name='api-token-auth'),
+
 ]

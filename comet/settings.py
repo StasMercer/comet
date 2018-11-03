@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django.contrib.sites',
     'accounts',
+    'events',
+
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,7 @@ ROOT_URLCONF = 'comet.urls'
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
     # default
+    'django.contrib.auth.backends.ModelBackend',
 )
 TEMPLATES = [
     {
@@ -162,6 +165,7 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
         'rest_framework.permissions.AllowAny',
     ),
     'PAGE_SIZE': 10,
