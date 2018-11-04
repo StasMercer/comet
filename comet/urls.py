@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.authtoken import views
+from . import views
 from .router import router
 from django.views.generic import TemplateView
 
@@ -23,8 +23,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('events/', include('events.urls')),
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
     path('accounts/', include('accounts.urls')),
-    path('api-token-auth/', views.obtain_auth_token, name='api-token-auth'),
+    path('media/<str:folder>/<str:img_name>/', views.show_img )
 
 ]

@@ -1,8 +1,15 @@
+from PIL import Image
 from django.shortcuts import HttpResponse, render
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.conf import settings
 
 
-def frontend(request):
-    return render(request, 'frontend/signup/index.html')
+def show_img(request, folder, img_name):
+
+    img_path = settings.MEDIA_ROOT + '\\'+folder+'\\' + img_name
+
+    try:
+        with open(img_path, "rb") as f:
+            return HttpResponse(f.read(), content_type="image/jpeg")
+    except IOError:
+        return HttpResponse('file open error')
 

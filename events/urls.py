@@ -1,12 +1,17 @@
 from django.urls import path, include
 from rest_framework import routers
-from events.api.viewsets import EventViewSet
+from events.api import viewsets
 
 
 router = routers.DefaultRouter()
 
-router.register('', EventViewSet)
+router.register('photos', viewsets.PhotoViewSet)
+router.register('tags', viewsets.TagViewSet)
+router.register('', viewsets.EventViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+
 ]
+
+urlpatterns += router.urls
+
