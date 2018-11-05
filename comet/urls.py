@@ -28,6 +28,4 @@ urlpatterns = [
     path('media/<str:folder>/<str:img_name>/', views.show_img),
     path('docs/', include_docs_urls(title='API documentation')),
 
-
-
 ]
