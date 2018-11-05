@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from rest_framework.documentation import include_docs_urls
 from .router import router
 from django.views.generic import TemplateView
 
@@ -24,6 +25,9 @@ urlpatterns = [
     path('events/', include('events.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
-    path('media/<str:folder>/<str:img_name>/', views.show_img )
+    path('media/<str:folder>/<str:img_name>/', views.show_img),
+    path('docs/', include_docs_urls(title='API documentation')),
+
+
 
 ]
