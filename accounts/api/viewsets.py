@@ -1,6 +1,6 @@
 from requests import Response
 from rest_framework import viewsets
-from accounts.models import CustomUser
+from accounts.models import CustomUser, Rate
 from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework import generics
@@ -20,6 +20,11 @@ class UserViewSet(viewsets.ModelViewSet):
             self.permission_classes = (AllowAny,)
 
         return super(UserViewSet, self).get_permissions()
+
+
+class RateViewsSet(viewsets.ModelViewSet):
+    queryset = Rate.objects.all()
+    serializer_class = RateSerializer
 
 
 
