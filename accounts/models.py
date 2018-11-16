@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.conf.global_settings import MEDIA_ROOT
 
 class CustomUser(AbstractUser):
 
@@ -16,7 +16,13 @@ class CustomUser(AbstractUser):
 
     date_of_birth = models.CharField(max_length=20)
 
+    avatar = models.ImageField(upload_to=str(username)+'/', name='avatar', default=MEDIA_ROOT+'/users/a.jpg')
+
     phone_number = models.CharField(max_length=30, unique=True, null=True)
+
+    friends = models.ManyToManyField('CustomUser', related_name='user_friend', blank=True)
+
+    tags = models.ManyToManyField('events.Tag', related_name='user_tag', blank=True)
 
 
 class Rate(models.Model):
@@ -28,6 +34,16 @@ class Rate(models.Model):
     from_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='rate_from', default='')
 
     to_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='rate_to', default='')
+
+
+class UserPhoto(models.Model):
+
+    photo_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, default='')
+
+    img_value = models.ImageField(upload_to='users/', default='_')
+
+    def __str__(self):
+        return self.img_value
 
 
 

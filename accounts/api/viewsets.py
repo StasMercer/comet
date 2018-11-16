@@ -27,4 +27,8 @@ class RateViewsSet(viewsets.ModelViewSet):
     serializer_class = RateSerializer
 
 
+class UserPhotoViewsSet(viewsets.ModelViewSet):
+    queryset = UserPhoto.objects.all()
+    serializer_class = PhotoSerializer
+
 

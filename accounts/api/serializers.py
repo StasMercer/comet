@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from accounts.models import CustomUser, Rate
+from accounts.models import CustomUser, Rate, UserPhoto
 
 
 def rate_validator(value):
@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'username', 'password', 'first_name', 'last_name', 'date_of_birth')
+        fields = ('email', 'username', 'password', 'first_name', 'last_name', 'avatar', 'date_of_birth')
 
 
 class RateSerializer(serializers.ModelSerializer):
@@ -36,6 +36,12 @@ class RateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rate
+        fields = '__all__'
+
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPhoto
         fields = '__all__'
 
 
