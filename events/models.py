@@ -13,7 +13,7 @@ class Event(models.Model):
 
     date_expire = models.DateField()
 
-    author = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING, related_name='event_author')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='event_author')
 
     members = models.ManyToManyField(CustomUser, related_name='event_member')
 

@@ -75,10 +75,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'comet.urls'
 SITE_ID = 1
-AUTHENTICATION_BACKENDS = (
-    # default
-    'django.contrib.auth.backends.ModelBackend',
-)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
