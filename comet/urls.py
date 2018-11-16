@@ -22,6 +22,7 @@ from django.views.generic import TemplateView
 
 
 urlpatterns = [
+    path('user_state/', views.UserState.as_view()),
     path('events/', include('events.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
