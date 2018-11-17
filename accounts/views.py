@@ -1,4 +1,6 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import AnonymousUser
+from rest_framework.authtoken.models import Token
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -12,6 +14,7 @@ from events.models import Event
 from rest_framework.views import APIView
 from .api import serializers
 from django.shortcuts import get_object_or_404
+
 
 
 @api_view(['GET', ])
@@ -59,7 +62,7 @@ def verify_email(request, email):
 
         send_mail(
             'Commet confirmation code',
-            'Hey budy, please confirm your email with code you see bellow\n' +
+            'Hey buddy, please confirm your email with code you see bellow\n' +
             str(rand_num),
             'pro100.stas.ru@gmail.com',
             [email],
@@ -74,34 +77,50 @@ def verify_email(request, email):
 
 class Logout(APIView):
     queryset = CustomUser.objects.all()
-    permission_classes(AllowAny, )
 
-    def get(self, request, format=None):
+    def get(self, request):
         # simply delete the token to force a login
-        request.user.auth_token.delete()
-        return Response('ok')
+        if request.user is not AnonymousUser:
+            Token.objects.get(user=request.user).delete()
+            logout(request)
+            return Response('ok')
+        else:
+            return Response('user not authenticated')
 
 
 class LoginView(APIView):
     permission_classes = ()
 
     def post(self, request, ):
+
         username = request.data.get("username")
         password = request.data.get("password")
+
         user = authenticate(username=username, password=password)
+
+        token = Token.objects.get_or_create(user=user)
+
         if user:
+            login(request, user)
             return Response({"token": user.auth_token.key})
         else:
             return Response({"error": "user not found"})
 
 
 class UserDetail(APIView):
+
+    """
+    get all related to user objects
+    aka(Profile page)
+    """
+
     def get(self, request, username):
         user = get_object_or_404(CustomUser, username=username)
         is_current = False
         if request.user == user:
             is_current = True
 
+        # receive objects from db using generator
         friends = [
             {'username': friend.username, 'avatar': friend.avatar.url}
             for friend in user.friends.iterator()
