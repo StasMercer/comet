@@ -76,6 +76,9 @@ def verify_email(request, email):
 
 
 class Logout(APIView):
+    """
+    logout current logined user and delete its token
+    """
     queryset = CustomUser.objects.all()
 
     def get(self, request):
@@ -89,6 +92,9 @@ class Logout(APIView):
 
 
 class LoginView(APIView):
+    """
+    login user, and create token with provided credentials
+    """
     permission_classes = ()
 
     def post(self, request, ):
@@ -105,6 +111,21 @@ class LoginView(APIView):
             return Response({"token": user.auth_token.key})
         else:
             return Response({"error": "user not found"})
+
+
+class UserState(APIView):
+    """
+    :return username if token in DB
+    else token not found
+    """
+    permission_classes = (AllowAny,)
+
+    def get(self, request, key):
+        token = Token.objects.get(key=key)
+        if token:
+            return Response(token.user.username)
+        else:
+            return Response('token not found')
 
 
 class UserDetail(APIView):
@@ -165,3 +186,18 @@ class UserDetail(APIView):
         }
 
         return Response(data)
+
+
+class AddFriend(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        friend_username = request.data.get('friend_username')
+        user = CustomUser.objects.get(username=username)
+        friend = CustomUser.objects.get(username=friend_username)
+
+        if friend and user:
+            user.friends.add(friend)
+            user.save()
+            return Response('ok')
+        else:
+            return Response('error (one of users is not exists)')

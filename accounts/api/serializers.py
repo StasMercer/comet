@@ -8,6 +8,12 @@ def rate_validator(value):
         raise serializers.ValidationError('rate is incorrect')
 
 
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('friends',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,
@@ -24,7 +30,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
+        lookup_field = 'username'
         fields = ('email', 'username', 'password', 'first_name', 'last_name', 'avatar', 'date_of_birth')
+        extra_kwargs = {
+            'url': {'lookup_field': 'username'}
+        }
 
 
 class RateSerializer(serializers.ModelSerializer):

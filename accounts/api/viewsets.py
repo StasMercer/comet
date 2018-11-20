@@ -11,9 +11,9 @@ class UserViewSet(viewsets.ModelViewSet):
     """
         Return a list of all the existing users.
     """
-
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'username'
 
     def get_permissions(self):
         if self.request.method == 'POST':

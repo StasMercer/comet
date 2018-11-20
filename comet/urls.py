@@ -15,14 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework import permissions
+
 from . import views
 from rest_framework.documentation import include_docs_urls
 from .router import router
 from django.views.generic import TemplateView
 
 
+
+
 urlpatterns = [
-    path('user_state/', views.UserState.as_view()),
     path('events/', include('events.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
