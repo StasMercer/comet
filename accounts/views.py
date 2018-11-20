@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import AnonymousUser
 from rest_framework.authtoken.models import Token
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -121,11 +121,12 @@ class UserState(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, key):
-        token = Token.objects.get(key=key)
-        if token:
-            return Response(token.user.username)
-        else:
+        try:
+            token = Token.objects.get(key=key)
+        except ObjectDoesNotExist:
             return Response('token not found')
+
+        return Response(token.user.username)
 
 
 class UserDetail(APIView):
