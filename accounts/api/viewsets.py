@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-        Return a list of all the existing users.
+        Return a list of all the existing users .
     """
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
