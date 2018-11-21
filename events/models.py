@@ -38,9 +38,12 @@ class Photo(models.Model):
 
     role = models.CharField(choices=ROLE_CHOICES, max_length=1, default='2')
 
-    photo_event = models.ForeignKey('Event', on_delete=models.CASCADE, default='')
+    event = models.ForeignKey('Event', related_name='event_photo', on_delete=models.CASCADE, default='')
 
     img_value = models.ImageField(upload_to='events/', default='_')
 
     def __str__(self):
-        return self.img_value
+        return self.img_value.path
+
+    def __unicode__(self):
+        return '%d: %s' % (self.id, str(self.img_value.path))

@@ -14,6 +14,12 @@ class FriendSerializer(serializers.ModelSerializer):
         fields = ('friends',)
 
 
+class ShortUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'avatar', 'first_name', 'last_name']
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,
