@@ -10,13 +10,13 @@ class CustomUser(AbstractUser):
 
     last_name = models.CharField(max_length=30)
 
-    password = models.TextField()
+    password = models.TextField(default='123456')
 
     email = models.CharField(max_length=100, unique=True)
 
     date_of_birth = models.CharField(max_length=20)
 
-    avatar = models.ImageField(upload_to=str(username)+'/', name='avatar', default=MEDIA_ROOT+'/users/a.jpg')
+    avatar = models.ImageField(upload_to='users/', name='avatar', default=MEDIA_ROOT+'/users/a.jpg')
 
     phone_number = models.CharField(max_length=30, unique=True, null=True)
 
@@ -24,6 +24,8 @@ class CustomUser(AbstractUser):
 
     tags = models.ManyToManyField('events.Tag', related_name='user_tag', blank=True)
 
+    def get_username(self):
+        return str(self.username)
 
 class Rate(models.Model):
 
@@ -33,12 +35,12 @@ class Rate(models.Model):
 
     from_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='rate_from', default='')
 
-    to_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='rate_to', default='')
+    to_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='user_rate', default='')
 
 
 class UserPhoto(models.Model):
 
-    photo_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, default='')
+    photo_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, default='', related_name='user_photos')
 
     img_value = models.ImageField(upload_to='users/', default='_')
 

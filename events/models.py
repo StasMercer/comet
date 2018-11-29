@@ -21,6 +21,9 @@ class Event(models.Model):
 
     tags = models.ManyToManyField('Tag', related_name='event_tag')
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 

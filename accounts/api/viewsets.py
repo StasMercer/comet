@@ -14,6 +14,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    http_method_names = ['get', 'post', 'head', 'patch']
 
     def get_permissions(self):
         if self.request.method == 'POST':
