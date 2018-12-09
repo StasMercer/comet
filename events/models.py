@@ -23,7 +23,6 @@ class Event(models.Model):
 
     tags = models.ManyToManyField('Tag', related_name='event_tag')
 
-    photos = models.ManyToManyField('Photo', related_name='event_photos')
 
 
     class Meta:

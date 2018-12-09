@@ -1,4 +1,4 @@
-from requests import Response
+from rest_framework.response import Response
 from rest_framework import viewsets
 from accounts.models import CustomUser, Rate
 from rest_framework.permissions import AllowAny
@@ -28,7 +28,15 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    http_method_names = ['get', 'patch']
+    http_method_names = ['get', 'patch', 'post']
+
+    @action(detail=True, methods=['post'])
+    def add_friend(self, request, username=None):
+        user = self.get_object()
+        friend = CustomUser.objects.get(username=request.data.get('friend_username'))
+        user.friends.add(friend)
+        return Response({'status': 'ok'})
+
 
 class RateViewsSet(viewsets.ModelViewSet):
     queryset = Rate.objects.all()
