@@ -95,18 +95,20 @@ class LoginView(APIView):
     """
     login user, and create token with provided credentials
     """
-    permission_classes = ()
+    permission_classes = (AllowAny,)
 
     def post(self, request, ):
 
         username = request.data.get("username")
         password = request.data.get("password")
-
+        print(request.data)
+        print(username, password)
         user = authenticate(username=username, password=password)
 
-        token = Token.objects.get_or_create(user=user)
+
 
         if user:
+            token = Token.objects.get_or_create(user=user)
             login(request, user)
             return Response({"token": user.auth_token.key})
         else:

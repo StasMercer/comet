@@ -22,6 +22,28 @@ class ShortUserSerializer(serializers.ModelSerializer):
         fields = ['username', 'avatar', 'first_name', 'last_name']
 
 
+class UserRegisterSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(min_length=6)
+
+    class Meta:
+        lookup_field = 'username'
+        model = CustomUser
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'date_of_birth']
+
+        extra_kwargs = {
+            'url': {'lookup_field': 'username'}
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+        if password is not None:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,
@@ -30,7 +52,6 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
             validators=[UniqueValidator(queryset=CustomUser.objects.all())]
             )
-    password = serializers.CharField(min_length=6)
 
 
     user_photos = serializers.SerializerMethodField()
@@ -45,11 +66,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         lookup_field = 'username'
-        fields = ('email', 'username', 'password', 'first_name', 'last_name',
+        fields = ('email', 'username', 'first_name', 'last_name',
                   'avatar', 'date_of_birth', 'tags', 'events_created', 'events_visited',
                   'user_rate', 'friends', 'user_photos')
+        read_only_fields = ('username', 'email')
         extra_kwargs = {
-            "password": {"write_only": True},
+
             'url': {'lookup_field': 'username'}
         }
 

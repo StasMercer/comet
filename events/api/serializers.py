@@ -27,7 +27,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['name', 'author', 'members', 'views', 'tags', 'event_photo']
+        fields = ['name', 'author', 'members', 'views', 'tags', 'event_photo', 'date_expire',]
 
     def get_author(self, obj):
 

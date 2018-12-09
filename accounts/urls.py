@@ -9,6 +9,7 @@ from rest_framework.authtoken import views as rest_views
 router = routers.DefaultRouter()
 
 router.register('users', viewsets.UserViewSet)
+router.register('register', viewsets.UserRegisterViewSet)
 router.register('rate', viewsets.RateViewsSet)
 router.register('photos', viewsets.UserPhotoViewsSet)
 

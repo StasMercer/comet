@@ -1,3 +1,7 @@
+from datetime import date
+
+from django import forms
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf.global_settings import MEDIA_ROOT
@@ -10,11 +14,11 @@ class CustomUser(AbstractUser):
 
     last_name = models.CharField(max_length=30)
 
-    password = models.TextField(default='123456')
+    password = models.CharField(max_length=100)
 
     email = models.CharField(max_length=100, unique=True)
 
-    date_of_birth = models.CharField(max_length=20)
+    date_of_birth = models.DateField(default='2000-01-03')
 
     avatar = models.ImageField(upload_to='users/', name='avatar', default=MEDIA_ROOT+'/users/a.jpg')
 

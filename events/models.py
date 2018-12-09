@@ -5,6 +5,8 @@ from accounts.models import CustomUser
 
 class Event(models.Model):
 
+    avatar = models.ImageField(upload_to='events/')
+
     name = models.CharField(max_length=200, default='')
 
     description = models.TextField()
@@ -20,6 +22,9 @@ class Event(models.Model):
     views = models.IntegerField(default=0)
 
     tags = models.ManyToManyField('Tag', related_name='event_tag')
+
+    photos = models.ManyToManyField('Photo', related_name='event_photos')
+
 
     class Meta:
         ordering = ['name']
@@ -40,8 +45,6 @@ class Photo(models.Model):
                     ('2', 'other'))
 
     role = models.CharField(choices=ROLE_CHOICES, max_length=1, default='2')
-
-    event = models.ForeignKey('Event', related_name='event_photo', on_delete=models.CASCADE, default='')
 
     img_value = models.ImageField(upload_to='events/', default='_')
 

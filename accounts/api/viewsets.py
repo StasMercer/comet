@@ -7,21 +7,28 @@ from rest_framework import generics
 from rest_framework.decorators import action
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserRegisterViewSet(viewsets.ModelViewSet):
     """
         Return a list of all the existing users .
     """
     queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserRegisterSerializer
     lookup_field = 'username'
-    http_method_names = ['get', 'post', 'head', 'patch']
+    http_method_names = ['post', 'head', 'patch']
 
     def get_permissions(self):
         if self.request.method == 'POST':
             self.permission_classes = (AllowAny,)
 
-        return super(UserViewSet, self).get_permissions()
+        return super(UserRegisterViewSet, self).get_permissions()
 
+
+class UserViewSet(viewsets.ModelViewSet):
+
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
+    http_method_names = ['get', 'patch']
 
 class RateViewsSet(viewsets.ModelViewSet):
     queryset = Rate.objects.all()
