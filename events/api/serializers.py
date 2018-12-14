@@ -41,7 +41,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['name', 'author', 'members', 'views', 'tags', 'avatar', 'date_expire',]
+        fields = ['id', 'name', 'author', 'members', 'views', 'tags', 'avatar', 'date_expire']
 
 
     def get_event_photo(self, obj):
