@@ -2,13 +2,13 @@ from rest_framework import serializers
 
 from accounts.models import CustomUser
 from events.models import Event, Tag, Photo
-from accounts.api.serializers import ShortUserSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'name')
+        fields = '__all__'
+        lookup_field = 'name'
 
 
 class PhotoSerializer(serializers.ModelSerializer):

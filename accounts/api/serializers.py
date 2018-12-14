@@ -1,6 +1,9 @@
 from rest_framework import serializers
+from rest_framework.relations import RelatedField
 from rest_framework.validators import UniqueValidator
 from accounts.models import CustomUser, Rate, UserPhoto
+from events.api.serializers import TagSerializer
+from events.models import Tag
 
 
 
@@ -9,10 +12,10 @@ def rate_validator(value):
         raise serializers.ValidationError('rate is incorrect')
 
 
-class FriendSerializer(serializers.ModelSerializer):
+class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = ('friends',)
+        model = UserPhoto
+        fields = '__all__'
 
 
 class ShortUserSerializer(serializers.ModelSerializer):
@@ -53,8 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
             validators=[UniqueValidator(queryset=CustomUser.objects.all())]
             )
 
-
-    user_photos = serializers.SerializerMethodField()
+    user_photos = PhotoSerializer(many=True)
 
     events_created = serializers.SerializerMethodField()
 
@@ -62,6 +64,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     events_visited = serializers.SerializerMethodField()
 
+    tags = TagSerializer(many=True)
+
+    friends = ShortUserSerializer(many=True)
 
     class Meta:
         model = CustomUser
@@ -69,7 +74,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('email', 'username', 'first_name', 'last_name',
                   'avatar', 'date_of_birth', 'tags', 'events_created', 'events_visited',
                   'user_rate', 'friends', 'user_photos')
-        read_only_fields = ('username', 'email')
+        read_only_fields = ('username', 'email', 'rate')
+        depth = 1
         extra_kwargs = {
 
             'url': {'lookup_field': 'username'}
@@ -90,9 +96,12 @@ class UserSerializer(serializers.ModelSerializer):
         return EventSerializer(qs, many=True, read_only=True).data
 
     def get_user_rate(self, obj):
-        qs = obj.user_rate.all()
-        print(qs.values)
-        return {'rate': 2}
+        qs = Rate.objects.filter(to_user__username=obj.username)
+        sum = 0
+        for obj in qs:
+            sum += obj.value
+        return {'rate': sum/len(qs)}
+
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(**validated_data)
@@ -100,6 +109,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RateSerializer(serializers.ModelSerializer):
+    from_user = serializers.SlugRelatedField(
+        many=False,
+        queryset=CustomUser.objects.all(),
+        slug_field='username'
+    )
+
+    to_user = serializers.SlugRelatedField(
+        many=False,
+        queryset=CustomUser.objects.all(),
+        slug_field='username'
+    )
 
     value = serializers.IntegerField(
         required=True,
@@ -110,11 +130,24 @@ class RateSerializer(serializers.ModelSerializer):
         model = Rate
         fields = '__all__'
 
+    def create(self, validated_data):
+        try:
+            qs = Rate.objects.get(from_user=validated_data['from_user'], to_user=validated_data['to_user'])
+        except Rate.DoesNotExist:
+            qs = None
 
-class PhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserPhoto
-        fields = '__all__'
+
+        if qs is not None:
+            rate = qs
+            rate.value = validated_data['value']
+            rate.save()
+        else:
+            rate = Rate.objects.create(**validated_data)
+
+        return rate
+
+
+
 
 
 

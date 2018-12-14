@@ -240,6 +240,10 @@ def items(value):
     lookup.  See issue #4931
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
+    if value is None:
+        # `{% for k, v in value.items %}` doesn't raise when value is None or
+        # not in the context, so neither should `{% for k, v in value|items %}`
+        return []
     return value.items()
 
 
@@ -310,7 +314,7 @@ def smart_urlquote_wrapper(matched_url):
         return None
 
 
-@register.filter
+@register.filter(needs_autoescape=True)
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.

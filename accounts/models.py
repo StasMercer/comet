@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 
     friends = models.ManyToManyField('CustomUser', related_name='user_friend', blank=True)
 
-    tags = models.ManyToManyField('events.Tag', related_name='user_tag', blank=True)
+    tags = models.ManyToManyField('events.Tag')
 
     def get_username(self):
         return str(self.username)

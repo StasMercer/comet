@@ -27,6 +27,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('events/', include('events.urls')),
+    path('api/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('media/<str:folder>/<str:img_name>/', views.show_img),
