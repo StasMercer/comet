@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'drf_autodocs',
     'corsheaders',
     'rest_auth.registration',
-
+    'whitenoise',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

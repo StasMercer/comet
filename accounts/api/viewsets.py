@@ -40,6 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def add_follower(self, request, username=None):
+        print(request.data)
         user = self.get_object()
         follower = CustomUser.objects.get(username=request.data.get('follower_username'))
         user.followers.add(follower)
