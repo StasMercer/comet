@@ -28,13 +28,35 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    http_method_names = ['get', 'patch', 'post', 'put']
+    http_method_names = ['get', 'patch']
 
-    @action(detail=True, methods=['post'])
-    def add_friend(self, request, username=None):
+    # heap of detail endpoints to make additional queries
+    @action(detail=True, methods=['patch'])
+    def add_following(self, request, username=None):
         user = self.get_object()
-        friend = CustomUser.objects.get(username=request.data.get('friend_username'))
-        user.friends.add(friend)
+        following = CustomUser.objects.get(username=request.data.get('following_username'))
+        user.following.add(following)
+        return Response({'status': 'ok'})
+
+    @action(detail=True, methods=['patch'])
+    def add_follower(self, request, username=None):
+        user = self.get_object()
+        follower = CustomUser.objects.get(username=request.data.get('follower_username'))
+        user.followers.add(follower)
+        return Response({'status': 'ok'})
+
+    @action(detail=True, methods=['patch'])
+    def remove_following(self, request, username=None):
+        user = self.get_object()
+        following = CustomUser.objects.get(username=request.data.get('following_username'))
+        user.following.remove(following)
+        return Response({'status': 'ok'})
+
+    @action(detail=True, methods=['patch'])
+    def remove_follower(self, request, username=None):
+        user = self.get_object()
+        follower = CustomUser.objects.get(username=request.data.get('follower_username'))
+        user.followers.remove(follower)
         return Response({'status': 'ok'})
 
 

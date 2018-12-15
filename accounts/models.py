@@ -24,7 +24,13 @@ class CustomUser(AbstractUser):
 
     phone_number = models.CharField(max_length=30, unique=True, null=True)
 
-    friends = models.ManyToManyField('CustomUser', related_name='user_friend', blank=True)
+    followers = models.ManyToManyField('CustomUser', related_name='user_follower', blank=True)
+
+    following = models.ManyToManyField('CustomUser', related_name='user_following', blank=True)
+
+    city = models.CharField(max_length=100)
+
+    country = models.CharField(max_length=50)
 
     tags = models.ManyToManyField('events.Tag')
 

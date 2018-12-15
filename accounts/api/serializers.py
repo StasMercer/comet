@@ -66,14 +66,16 @@ class UserSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(many=True)
 
-    friends = ShortUserSerializer(many=True)
+    followers = ShortUserSerializer(many=True)
+
+    following = ShortUserSerializer(many=True)
 
     class Meta:
         model = CustomUser
         lookup_field = 'username'
         fields = ('email', 'username', 'first_name', 'last_name',
                   'avatar', 'date_of_birth', 'tags', 'events_created', 'events_visited',
-                  'user_rate', 'friends', 'user_photos')
+                  'user_rate', 'followers', 'following', 'user_photos', 'city', 'country')
         read_only_fields = ('username', 'email', 'rate')
         depth = 1
         extra_kwargs = {
@@ -98,9 +100,13 @@ class UserSerializer(serializers.ModelSerializer):
     def get_user_rate(self, obj):
         qs = Rate.objects.filter(to_user__username=obj.username)
         sum = 0
-        for obj in qs:
-            sum += obj.value
-        return {'rate': sum/len(qs)}
+
+        if len(qs) > 0 :
+            for obj in qs:
+                sum += obj.value
+            return {'rate': sum / len(qs)}
+        else:
+            return {'rate': 0}
 
 
     def create(self, validated_data):

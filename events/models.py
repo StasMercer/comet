@@ -23,6 +23,11 @@ class Event(models.Model):
 
     tags = models.ManyToManyField('Tag')
 
+    country = models.CharField(max_length=30)
+
+    city = models.CharField(max_length=30)
+
+    geo = models.CharField(max_length=100)
 
 
     class Meta:
