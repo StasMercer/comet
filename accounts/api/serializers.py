@@ -5,8 +5,6 @@ from accounts.models import CustomUser, Rate, UserPhoto
 from events.api.serializers import TagSerializer
 from events.models import Tag
 
-
-
 def rate_validator(value):
     if value > 5 or value < 0:
         raise serializers.ValidationError('rate is incorrect')
@@ -70,6 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     following = ShortUserSerializer(many=True)
 
+
     class Meta:
         model = CustomUser
         lookup_field = 'username'
@@ -109,9 +108,6 @@ class UserSerializer(serializers.ModelSerializer):
             return {'rate': 0}
 
 
-    def create(self, validated_data):
-        user = CustomUser.objects.create_user(**validated_data)
-        return user
 
 
 class RateSerializer(serializers.ModelSerializer):

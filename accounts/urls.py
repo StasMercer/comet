@@ -16,7 +16,7 @@ router.register('photos', viewsets.UserPhotoViewsSet)
 urlpatterns = [
 
     path('', include(router.urls)),
-    path('user_detail/<str:username>/', views.UserDetail.as_view(), name='user_detail'),
+    #path('user_detail/<str:username>/', views.UserDetail.as_view(), name='user_detail'),
     path('logout/', views.Logout.as_view()),
     path('user_state/<str:key>/', views.UserState.as_view()),
     #path('add_friend/', views.AddFriend.as_view()),

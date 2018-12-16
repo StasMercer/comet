@@ -5,7 +5,8 @@ from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework import generics
 from rest_framework.decorators import action
-
+from comet.permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class UserRegisterViewSet(viewsets.ModelViewSet):
     """
@@ -29,6 +30,12 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
     http_method_names = ['get', 'patch']
+
+    def get_permissions(self):
+        if self.request.method == 'PATCH' or self.request.method == 'PUT':
+            return (IsOwnerOrReadOnly(),)
+        else:
+            return (IsAuthenticatedOrReadOnly(),)
 
     # heap of detail endpoints to make additional queries
     @action(detail=True, methods=['patch'])
@@ -59,6 +66,17 @@ class UserViewSet(viewsets.ModelViewSet):
         follower = CustomUser.objects.get(username=request.data.get('follower_username'))
         user.followers.remove(follower)
         return Response({'status': 'ok'})
+
+    @action(detail=True, methods=['patch'])
+    def update_tags(self, request, username=None):
+
+        user = self.get_object()
+        user.tags.clear()
+
+        for name in request.data.get('tags'):
+            tag = Tag.objects.get(name__iexact=name)
+            user.tags.add(tag)
+        return Response(UserSerializer(user).data)
 
 
 class RateViewsSet(viewsets.ModelViewSet):

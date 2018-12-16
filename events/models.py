@@ -40,6 +40,9 @@ class Event(models.Model):
 class Tag(models.Model):
     name = models.CharField(unique=True, max_length=50)
 
+    def __str__(self):
+        return self.name
+
     def __unicode__(self):
         return '%s'% (self.name)
 
