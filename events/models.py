@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from accounts.models import CustomUser
 # Create your models here.
@@ -14,6 +16,8 @@ class Event(models.Model):
     date_created = models.DateField(auto_now_add=True)
 
     date_expire = models.DateField()
+
+    time_begins = models.TimeField(default=datetime.time(16, 00))
 
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='event_author')
 

@@ -11,6 +11,12 @@ class TagSerializer(serializers.ModelSerializer):
         lookup_field = 'name'
 
 
+class ShortEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ('id', 'name', 'avatar')
+
+
 class PhotoSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -19,6 +25,7 @@ class PhotoSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return instance.img_value.path
+
 
 class EventSerializer(serializers.ModelSerializer):
 
@@ -33,25 +40,23 @@ class EventSerializer(serializers.ModelSerializer):
         slug_field='username'
     )
 
-    author = serializers.SlugRelatedField(
-        many=False,
-        queryset=CustomUser.objects.all(),
-        slug_field='username'
-    )
+    author = serializers.SerializerMethodField()
+
+    time_begins = serializers.TimeField(format='%H:%M', input_formats='%H:%M')
 
     class Meta:
         model = Event
-        fields = ['id', 'name','description', 'author', 'members', 'views', 'tags',
-                  'avatar', 'date_expire', 'city', 'country', 'geo' ]
+        fields = ['id', 'name', 'description', 'time_begins', 'author', 'members', 'views', 'tags',
+                  'avatar', 'date_expire', 'city', 'country', 'geo']
 
 
     def get_event_photo(self, obj):
         qs = obj.event_photo.all()
         return PhotoSerializer(qs, many=True, read_only=True).data
 
-    # def get_author(self, obj):
-    #
-    #     return ShortUserSerializer(obj.author).data
+    def get_author(self, obj):
+        from accounts.api.serializers import ShortUserSerializer
+        return ShortUserSerializer(obj.author).data
     #
     # def get_members(self, obj):
     #     qs = obj.members.all()

@@ -4,6 +4,7 @@ from accounts.models import CustomUser, Rate
 from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework import generics
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from comet.permissions import IsOwner
 from rest_framework.permissions import IsAuthenticated
@@ -38,6 +39,16 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         serializer = ShortUserSerializer(user.followers.all(), many=True, read_only=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def is_follower(self, request, username=None):
+        user = get_object_or_404(CustomUser, username=username)
+        follower_username = request.GET.get('follower_username')
+        qs = user.followers.filter(username__iexact=follower_username)
+        if qs:
+            return Response('follower')
+        else:
+            return Response('not follower')
 
     @action(detail=True, methods=['get'])
     def get_following(self, request, username=None):

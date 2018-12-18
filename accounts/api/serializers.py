@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.relations import RelatedField
 from rest_framework.validators import UniqueValidator
 from accounts.models import CustomUser, Rate, UserPhoto
-from events.api.serializers import TagSerializer
+from events.api.serializers import TagSerializer, ShortEventSerializer
 from events.models import Tag
 
 def rate_validator(value):
@@ -18,9 +18,22 @@ class PhotoSerializer(serializers.ModelSerializer):
 
 class ShortUserSerializer(serializers.ModelSerializer):
 
+    user_rate = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
-        fields = ['username', 'avatar', 'first_name', 'last_name']
+        fields = ['username', 'avatar', 'first_name', 'last_name', 'user_rate']
+
+    def get_user_rate(self, obj):
+        qs = Rate.objects.filter(to_user__username=obj.username)
+        sum = 0
+
+        if len(qs) > 0:
+            for obj in qs:
+                sum += obj.value
+            return sum / len(qs)
+        else:
+            return 0
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -95,24 +108,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_events_created(self, obj):
         qs = obj.event_author.all()
-        from events.api.serializers import EventSerializer
-        return EventSerializer(qs, many=True, read_only=True).data
+        return ShortEventSerializer(qs, many=True, read_only=True).data
 
     def get_events_visited(self, obj):
         qs = obj.event_member.all()
-        from events.api.serializers import EventSerializer
-        return EventSerializer(qs, many=True, read_only=True).data
+        return ShortEventSerializer(qs, many=True, read_only=True).data
 
     def get_user_rate(self, obj):
         qs = Rate.objects.filter(to_user__username=obj.username)
         sum = 0
 
-        if len(qs) > 0 :
+        if len(qs) > 0:
             for obj in qs:
                 sum += obj.value
-            return {'rate': sum / len(qs)}
+            return sum / len(qs)
         else:
-            return {'rate': 0}
+            return 0
 
 
 
