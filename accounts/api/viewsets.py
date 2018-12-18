@@ -5,8 +5,8 @@ from rest_framework.permissions import AllowAny
 from .serializers import *
 from rest_framework import generics
 from rest_framework.decorators import action
-from comet.permissions import IsOwnerOrReadOnly
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from comet.permissions import IsOwner
+from rest_framework.permissions import IsAuthenticated
 
 class UserRegisterViewSet(viewsets.ModelViewSet):
     """
@@ -31,26 +31,26 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     http_method_names = ['get', 'patch']
 
-    def get_permissions(self):
-        if self.request.method == 'PATCH' or self.request.method == 'PUT':
-            return (IsOwnerOrReadOnly(),)
-        else:
-            return (IsAuthenticatedOrReadOnly(),)
-
     # heap of detail endpoints to make additional queries
-    @action(detail=True, methods=['patch'])
+
+    @action(detail=True, methods=['get'])
+    def get_followers(self, request, username=None):
+        user = self.get_object()
+        serializer = ShortUserSerializer(user.followers.all(), many=True, read_only=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def get_following(self, request, username=None):
+        user = self.get_object()
+        serializer = ShortUserSerializer(user.following.all(), many=True, read_only=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['patch'], permission_classes=[IsOwner])
     def add_following(self, request, username=None):
         user = self.get_object()
         following = CustomUser.objects.get(username=request.data.get('following_username'))
         user.following.add(following)
-        return Response({'status': 'ok'})
-
-    @action(detail=True, methods=['patch'])
-    def add_follower(self, request, username=None):
-        print(request.data)
-        user = self.get_object()
-        follower = CustomUser.objects.get(username=request.data.get('follower_username'))
-        user.followers.add(follower)
+        following.followers.add(user)
         return Response({'status': 'ok'})
 
     @action(detail=True, methods=['patch'])
@@ -58,14 +58,9 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         following = CustomUser.objects.get(username=request.data.get('following_username'))
         user.following.remove(following)
+        following.followers.remove(user)
         return Response({'status': 'ok'})
 
-    @action(detail=True, methods=['patch'])
-    def remove_follower(self, request, username=None):
-        user = self.get_object()
-        follower = CustomUser.objects.get(username=request.data.get('follower_username'))
-        user.followers.remove(follower)
-        return Response({'status': 'ok'})
 
     @action(detail=True, methods=['patch'])
     def update_tags(self, request, username=None):

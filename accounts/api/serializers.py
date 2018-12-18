@@ -64,9 +64,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(many=True)
 
-    followers = ShortUserSerializer(many=True)
+    followers = serializers.SerializerMethodField()
 
-    following = ShortUserSerializer(many=True)
+    following = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -85,6 +85,13 @@ class UserSerializer(serializers.ModelSerializer):
     def get_user_photos(self, obj):
         qs = obj.user_photos.all()
         return PhotoSerializer(qs, many=True, read_only=True).data
+
+
+    def get_followers(self, obj):
+        return obj.followers.count()
+
+    def get_following(self, obj):
+        return obj.following.count()
 
     def get_events_created(self, obj):
         qs = obj.event_author.all()
