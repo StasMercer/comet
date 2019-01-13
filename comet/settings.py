@@ -52,8 +52,9 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'notifications',
 
-
+    'chat',
     'accounts',
     'events',
 
@@ -173,6 +174,16 @@ EMAIL_USE_TLS = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
+
+# Celery settings
+CELERY_TASK_ALWAYS_EAGER = True
+
+# notifications settings
+NOTIFICATIONS_CHANNELS = {
+   'websocket': 'chat.channels.BroadCastWebSocketChannel'
+}
+
+BROKER_VHOST = "comet"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
