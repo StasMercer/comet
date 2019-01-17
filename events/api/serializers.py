@@ -42,7 +42,6 @@ class EventSerializer(serializers.ModelSerializer):
 
     author = serializers.SerializerMethodField()
 
-    time_begins = serializers.TimeField(format='%H:%M', input_formats='%H:%M')
 
     class Meta:
         model = Event
