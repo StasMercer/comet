@@ -183,7 +183,6 @@ NOTIFICATIONS_CHANNELS = {
    'websocket': 'chat.channels.BroadCastWebSocketChannel'
 }
 
-BROKER_VHOST = "comet"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

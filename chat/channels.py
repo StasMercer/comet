@@ -13,10 +13,10 @@ class BroadCastWebSocketChannel(BaseNotificationChannel):
     def _connect(self):
         """Connect to the RabbitMQ server."""
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='127.0.0.1')
+            pika.ConnectionParameters(host='localhost')
         )
         channel = connection.channel()
-
+        print("connected")
         return connection, channel
 
     def construct_message(self):
@@ -30,8 +30,8 @@ class BroadCastWebSocketChannel(BaseNotificationChannel):
         connection, channel = self._connect()
 
         uri = self.notification_kwargs['extra_data']['uri']
-
+        print(uri)
         channel.exchange_declare(exchange=uri, exchange_type='fanout')
-        channel.basic_publish(exchange=uri, routing_key='', body=message)
+        channel.basic_publish(exchange=uri, routing_key=uri, body=message)
 
         connection.close()
