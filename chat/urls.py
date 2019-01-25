@@ -1,12 +1,12 @@
-"""URL's for the chat app."""
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .api.viewsets import MessageViewSet
 
-from django.contrib import admin
-from django.urls import path
 
-from . import views
+router = DefaultRouter()
+router.register('message', MessageViewSet)
 
 urlpatterns = [
-    path('', views.ChatSessionView.as_view()),
-    path('<uri>/', views.ChatSessionView.as_view()),
-    path('<uri>/messages/', views.ChatSessionMessageView.as_view()),
+    path('', include(router.urls)),
+
 ]

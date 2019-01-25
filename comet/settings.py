@@ -35,6 +35,11 @@ ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 INSTALLED_APPS = [
+    'channels',
+    'chat',
+    'accounts',
+    'events',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,16 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_json_api',
     'drf_autodocs',
     'corsheaders',
-    'rest_auth.registration',
-    'whitenoise',
     'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'notifications',
-
-    'chat',
-    'accounts',
-    'events',
 
 ]
 
@@ -68,7 +64,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -94,8 +89,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'comet.wsgi.application'
+ASGI_APPLICATION = 'comet.routing.application'
 
-
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": ['redis://h:p00ea14e9ba2ec48fdbf1c9abf56bf3e21075f0ca7f82e1f97f534774186285e9@ec2-63-32-230-12.eu-west-1.compute.amazonaws.com:21339'],
+        },
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -150,7 +153,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -175,15 +177,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 
-# Celery settings
-CELERY_TASK_ALWAYS_EAGER = True
-
-# notifications settings
-NOTIFICATIONS_CHANNELS = {
-   'websocket': 'chat.channels.BroadCastWebSocketChannel'
-}
-
-BROKER_VHOST = "comet"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

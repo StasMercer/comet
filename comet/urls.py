@@ -30,9 +30,8 @@ urlpatterns = [
     path('api/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('chat/', include('chat.urls')),
     path('media/<str:folder>/<str:img_name>/', views.show_img),
     path('docs/', include_docs_urls(title='API documentation')),
-    path('chats/', include('chat.urls')),
-    path('notifications/', include('notifications.urls', namespace='notifications'))
 
 ]
