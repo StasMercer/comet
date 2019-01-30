@@ -4,6 +4,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from django.conf import settings
 from rest_framework.authtoken.models import Token
+
+from accounts.models import CustomUser
 from .api.serializers import MessageSerializer
 from .models import Message
 from events.models import Event
@@ -39,17 +41,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
 
         text_data_json = json.loads(text_data)
-        message = text_data_json.get('message', '')
-        token = text_data_json.get('token', '')
 
-        if token:
-            try:
-                self.event = Event.objects.get(pk=self.scope['url_route']['kwargs']['event_id'])
-                self.user = Token.objects.get(key=token).user
+        try:
+            message = text_data_json.get('message', '')
+            username = text_data_json.get('username', '')
+            self.event = Event.objects.get(pk=self.scope['url_route']['kwargs']['event_id'])
+            self.user = CustomUser.objects.get(username=username)
 
-            except Token.DoesNotExist:
-                self.errors.append('token_does_not_exist')
-            except Event.DoesNotExist:
+        except CustomUser.DoesNotExist:
+             self.errors.append('user_does_not_exist')
+        except Event.DoesNotExist:
                 self.errors.append('event_does_not_exist')
 
         if not self.errors and message:
