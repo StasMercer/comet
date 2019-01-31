@@ -14,9 +14,6 @@ from accounts.api.serializers import ShortUserSerializer
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
-    user = None
-    event = None
-    errors = []
 
     async def connect(self):
         self.event_id = self.scope['url_route']['kwargs']['event_id']
@@ -41,21 +38,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
 
         text_data_json = json.loads(text_data)
+        errors = []
 
         try:
             message = text_data_json.get('message', '')
             username = text_data_json.get('username', '')
-            self.event = Event.objects.get(pk=self.scope['url_route']['kwargs']['event_id'])
-            self.user = CustomUser.objects.get(username=username)
+            event = Event.objects.get(pk=self.scope['url_route']['kwargs']['event_id'])
+            user = CustomUser.objects.get(username=username)
 
         except CustomUser.DoesNotExist:
-             self.errors.append('user_does_not_exist')
+                errors.append('user_does_not_exist')
         except Event.DoesNotExist:
-                self.errors.append('event_does_not_exist')
+                errors.append('event_does_not_exist')
 
-        if not self.errors and message:
+        if not errors and message:
 
-            Message.objects.create(user=self.user, event=self.event, text=message, is_read=False)
+            Message.objects.create(user=user, event=event, text=message, is_read=False)
 
             # Send message to room group
             await self.channel_layer.group_send(
@@ -63,7 +61,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'chat_message',
                     'message': message,
-
+                    'username': user.username,
+                    'avatar': str(user.avatar),
                 }
             )
         else:
@@ -71,7 +70,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.event_group_id,
                 {
                     'type': 'chat_error',
-                    'error': self.errors,
+                    'error': errors,
 
                 }
 
@@ -80,18 +79,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
-
+        username = event['username']
+        avatar = event['avatar']
         # Send message to WebSocket
+
         await self.send(text_data=json.dumps({
             'message': message,
-            'username': self.user.username,
-            'avatar': str(self.user.avatar),
+            'username': username,
+            'avatar': avatar,
 
         }))
 
     async def chat_error(self, event):
         error = event['error']
-        self.errors = []
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'error': error
