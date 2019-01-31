@@ -14,7 +14,6 @@ from accounts.api.serializers import ShortUserSerializer
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
-
     async def connect(self):
         self.event_id = self.scope['url_route']['kwargs']['event_id']
         self.event_group_id = 'chat_%s' % self.event_id
@@ -39,7 +38,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         text_data_json = json.loads(text_data)
         errors = []
-
         try:
             message = text_data_json.get('message', '')
             username = text_data_json.get('username', '')
@@ -66,8 +64,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         else:
-            await self.channel_layer.group_send(
-                self.event_group_id,
+            await self.channel_layer.send(
+                self.channel_name,
                 {
                     'type': 'chat_error',
                     'error': errors,
