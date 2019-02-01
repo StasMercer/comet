@@ -86,7 +86,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         lookup_field = 'username'
         fields = ('email', 'username', 'first_name', 'last_name',
-                  'avatar', 'cloud_img', 'date_of_birth', 'tags', 'events_created', 'events_visited',
+                  'avatar', 'date_of_birth', 'tags', 'events_created', 'events_visited',
                   'user_rate', 'followers', 'following', 'user_photos', 'city', 'country')
         read_only_fields = ('username', 'email', 'rate')
         depth = 1
