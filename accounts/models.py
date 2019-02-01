@@ -5,6 +5,8 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf.global_settings import MEDIA_ROOT
+from cloudinary.models import CloudinaryField
+
 
 class CustomUser(AbstractUser):
 
@@ -20,7 +22,7 @@ class CustomUser(AbstractUser):
 
     date_of_birth = models.DateField(default='2000-01-03')
 
-    avatar = models.ImageField(upload_to='users/', name='avatar', default=MEDIA_ROOT+'/users/a.jpg')
+    avatar = CloudinaryField('image')
 
     phone_number = models.CharField(max_length=30, unique=True, null=True)
 
@@ -36,6 +38,7 @@ class CustomUser(AbstractUser):
 
     def get_username(self):
         return str(self.username)
+
 
 class Rate(models.Model):
 

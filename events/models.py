@@ -1,5 +1,5 @@
 import datetime
-
+from cloudinary.models import CloudinaryField
 from django.db import models
 from accounts.models import CustomUser
 # Create your models here.
@@ -7,7 +7,7 @@ from accounts.models import CustomUser
 
 class Event(models.Model):
 
-    avatar = models.ImageField(upload_to='events/')
+    avatar = CloudinaryField('image')
 
     name = models.CharField(max_length=200, default='')
 
@@ -57,7 +57,7 @@ class Photo(models.Model):
 
     role = models.CharField(choices=ROLE_CHOICES, max_length=1, default='2')
 
-    img_value = models.ImageField(upload_to='events/', default='_')
+    img_value = CloudinaryField('image')
 
     def __str__(self):
         return self.img_value.path

@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'drf_autodocs',
     'corsheaders',
     'allauth',
-
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +152,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
+
+CLOUDINARY = {
+  'cloud_name': 'son313',
+  'api_key': '637921576155489',
+  'api_secret': 'Fl3bORDQtXlqUHIiUre0engV7QI',
+}
 
 
 STATIC_URL = '/static/'
