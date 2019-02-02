@@ -3,11 +3,14 @@ from datetime import date
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+
 from comet.permissions import IsOwner
 from events.models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from accounts.api.serializers import ShortUserSerializer
 
 
 class EventRegisterViewSet(viewsets.ModelViewSet):
@@ -24,11 +27,17 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     http_method_names = ['get', 'patch']
 
+
     def get_permissions(self):
         if self.request.method == 'PATCH' or self.request.method == 'PUT':
             return (IsOwner(),)
         else:
             return (IsAuthenticated(),)
+
+    @action(detail=True, methods=['get'],)
+    def get_members(self, request, pk):
+        event = Event.objects.get(pk=pk)
+        return Response(ShortUserSerializer(event.members, many=True).data)
 
     @action(detail=True, methods=['patch'])
     def add_follower(self, request, pk=None):
@@ -60,8 +69,13 @@ class EventViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def get_not_expired(self, request):
-        qs = Event.objects.filter(date_expire__gt=date.today())
-        return Response(EventSerializer(qs, many=True).data)
+        queryset = Event.objects.filter(date_expire__gt=date.today())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class TagViewSet(viewsets.ModelViewSet):
