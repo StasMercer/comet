@@ -23,6 +23,8 @@ class Event(models.Model):
 
     members = models.ManyToManyField(CustomUser, related_name='event_member')
 
+    max_members = models.IntegerField(default=-1)
+
     views = models.IntegerField(default=0)
 
     tags = models.ManyToManyField('Tag')

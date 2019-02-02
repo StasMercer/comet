@@ -7,7 +7,9 @@ router = routers.DefaultRouter()
 
 router.register('photos', viewsets.PhotoViewSet)
 router.register('tags', viewsets.TagViewSet)
+router.register('create', viewsets.EventRegisterViewSet)
 router.register('', viewsets.EventViewSet)
+
 
 urlpatterns = [
 
