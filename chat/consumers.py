@@ -39,28 +39,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         errors = []
         try:
-            message = text_data_json.get('message', '')
-            username = text_data_json.get('username', '')
+            text = text_data_json.get('text', '')
+            user = text_data_json.get('user', '')
             event = Event.objects.get(pk=self.scope['url_route']['kwargs']['event_id'])
-            user = CustomUser.objects.get(username=username)
+            user_obj = CustomUser.objects.get(username=user)
 
         except CustomUser.DoesNotExist:
                 errors.append('user_does_not_exist')
         except Event.DoesNotExist:
                 errors.append('event_does_not_exist')
 
-        if not errors and message:
+        if not errors and text:
 
-            Message.objects.create(user=user, event=event, text=message, is_read=False)
+            Message.objects.create(user=user_obj, event=event, text=text, is_read=False)
 
             # Send message to room group
             await self.channel_layer.group_send(
                 self.event_group_id,
                 {
                     'type': 'chat_message',
-                    'message': message,
-                    'username': user.username,
-                    'avatar': str(user.avatar),
+                    'text': text,
+                    'user': user_obj.username,
+                    'avatar': str(user_obj.avatar),
                 }
             )
         else:
@@ -76,14 +76,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def chat_message(self, event):
-        message = event['message']
-        username = event['username']
+        text = event['text']
+        user = event['user']
         avatar = event['avatar']
         # Send message to WebSocket
 
         await self.send(text_data=json.dumps({
-            'message': message,
-            'username': username,
+            'text': text,
+            'user': user,
             'avatar': avatar,
 
         }))

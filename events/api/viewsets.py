@@ -39,6 +39,7 @@ class EventViewSet(viewsets.ModelViewSet):
         event = Event.objects.get(pk=pk)
         return Response(ShortUserSerializer(event.members, many=True).data)
 
+    """just {"username":"your_username"}"""
     @action(detail=True, methods=['patch'])
     def add_follower(self, request, pk=None):
 
@@ -53,6 +54,7 @@ class EventViewSet(viewsets.ModelViewSet):
         except KeyError:
             return Response('no_appropriate_arguments')
 
+    """just {"username":"your_username"}"""
     @action(detail=True, methods=['patch'])
     def remove_follower(self, request, pk=None):
 
