@@ -1,19 +1,16 @@
 from rest_framework import serializers
 from chat.models import Message
 from accounts.models import CustomUser
+from accounts.api.serializers import ShortUserSerializer
 from events.models import Event
 
 
 class MessageSerializer(serializers.ModelSerializer):
 
-    user = serializers.SlugRelatedField(
-        many=False,
-        queryset=CustomUser.objects.all(),
-        slug_field='username'
-    )
+    user = ShortUserSerializer()
 
     class Meta:
         model = Message
-        fields = "__all__"
+        fields = ('event', 'user', 'text', 'date', 'is_read')
 
 
