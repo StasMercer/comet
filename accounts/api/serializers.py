@@ -11,9 +11,16 @@ def rate_validator(value):
 
 
 class PhotoSerializer(serializers.ModelSerializer):
+
+    photo_user = serializers.SlugRelatedField(
+        many=False,
+        queryset=CustomUser.objects.all(),
+        slug_field='username'
+    )
+
     class Meta:
         model = UserPhoto
-        fields = '__all__'
+        fields = ('photo_user', 'img_value')
 
 
 class ShortUserSerializer(serializers.ModelSerializer):

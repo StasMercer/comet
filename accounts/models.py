@@ -55,7 +55,7 @@ class UserPhoto(models.Model):
 
     photo_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, default='', related_name='user_photos')
 
-    img_value = models.ImageField(upload_to='users/', default='_')
+    img_value = CloudinaryField('image')
 
     def __str__(self):
         return self.img_value
