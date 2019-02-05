@@ -44,7 +44,7 @@ class EventRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ['name', 'description', 'time_begins', 'author', 'max_members', 'tags',
-                  'avatar', 'date_expire', 'city', 'country', 'geo']
+                   'date_expire', 'city', 'country', 'geo']
 
 
 class EventSerializer(serializers.ModelSerializer):
