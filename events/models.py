@@ -7,7 +7,7 @@ from accounts.models import CustomUser
 
 class Event(models.Model):
 
-    avatar = CloudinaryField('image')
+    avatar = CloudinaryField('image', blank=True)
 
     name = models.CharField(max_length=200, default='')
 
