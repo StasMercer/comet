@@ -1,10 +1,12 @@
 from datetime import date
 
+from django.core.exceptions import FieldError
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-
+from rest_framework import filters
 from comet.permissions import IsOwner
 from events.models import *
 from .serializers import *
@@ -26,7 +28,9 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     http_method_names = ['get', 'patch']
-
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    search_fields = ('name', 'author__username', )
+    filter_fields = ('name', 'author', 'date_expire', 'city', 'geo', 'country', 'time_begins')
 
     def get_permissions(self):
         if self.request.method == 'PATCH' or self.request.method == 'PUT':
@@ -79,6 +83,16 @@ class EventViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        params = request.GET.dict()
+        try:
+
+            result = Event.objects.filter(**params)
+            return Response(ShortEventSerializer(result).data)
+
+        except FieldError:
+            return Response('invalid_params')
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
