@@ -8,6 +8,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from comet.permissions import IsOwner
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import filters
+from django_filters import rest_framework as rest_filters
+
 
 class UserRegisterViewSet(viewsets.ModelViewSet):
     """
@@ -31,7 +34,9 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
     http_method_names = ['get', 'patch']
-
+    filter_backends = (filters.SearchFilter, rest_filters.DjangoFilterBackend,)
+    search_fields = ('username', 'first_name', 'last_name')
+    filter_fields = ('country', 'city', 'date_of_birth')
     # heap of detail endpoints to make additional queries
 
     @action(detail=True, methods=['get'])

@@ -39,6 +39,12 @@ class CustomUser(AbstractUser):
     def get_username(self):
         return str(self.username)
 
+    def __unicode__(self):
+        return self.username
+
+    def __str__(self):
+        return self.username
+
 
 class Rate(models.Model):
 

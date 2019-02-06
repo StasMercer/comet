@@ -1,7 +1,8 @@
 from datetime import date
 
 from django.core.exceptions import FieldError
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as rest_filters
+
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -14,6 +15,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from accounts.api.serializers import ShortUserSerializer
 
+
+class EventFilter(rest_filters.FilterSet):
+    tags = rest_filters.CharFilter(method='filter_tags')
+    name = rest_filters.CharFilter(field_name='name')
+    author = rest_filters.CharFilter(field_name='author__username')
+    city = rest_filters.CharFilter(field_name='city')
+    country = rest_filters.CharFilter(field_name='country')
+    date_start = rest_filters.DateFilter(field_name='date_expire', lookup_expr='gte')
+    date_end = rest_filters.DateFilter(field_name='date_expire', lookup_expr='lte')
+
+    class Meta:
+        model = Event
+        fields = ['tags', 'name', 'author', 'date_start', 'date_end', 'city', 'country']
+
+    def filter_tags(self, queryset, name, tags):
+        return queryset.filter(tags__name__in=tags.split(','))
 
 class EventRegisterViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
@@ -28,9 +45,10 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     http_method_names = ['get', 'patch']
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    filter_backends = (filters.SearchFilter, rest_filters.DjangoFilterBackend, )
     search_fields = ('name', 'author__username', )
-    filter_fields = ('name', 'author', 'date_expire', 'city', 'geo', 'country', 'time_begins')
+    filter_class = EventFilter
+
 
     def get_permissions(self):
         if self.request.method == 'PATCH' or self.request.method == 'PUT':

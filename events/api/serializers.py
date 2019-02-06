@@ -9,6 +9,9 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
         lookup_field = 'name'
+        extra_kwargs = {
+            'url': {'lookup_field': 'name'}
+        }
 
 
 class ShortEventSerializer(serializers.ModelSerializer):
@@ -48,7 +51,7 @@ class EventRegisterSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-
+    from accounts.api.serializers import ShortUserSerializer
     tags = serializers.SlugRelatedField(
         many=True,
         queryset=Tag.objects.all(),
@@ -57,7 +60,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     members_count = serializers.SerializerMethodField()
 
-    author = serializers.SerializerMethodField()
+    author = ShortUserSerializer()
 
     max_members = serializers.IntegerField(required=False, default=-1)
 

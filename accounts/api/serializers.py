@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.relations import RelatedField
 from rest_framework.validators import UniqueValidator
 from accounts.models import CustomUser, Rate, UserPhoto
-from events.api.serializers import TagSerializer, ShortEventSerializer
+
 from events.models import Tag
 
 def rate_validator(value):
@@ -28,8 +28,13 @@ class ShortUserSerializer(serializers.ModelSerializer):
     user_rate = serializers.SerializerMethodField()
 
     class Meta:
+
         model = CustomUser
         fields = ['username', 'avatar', 'first_name', 'last_name', 'user_rate']
+        lookup_field = 'username'
+        extra_kwargs = {
+            'url': {'lookup_field': 'username'}
+        }
 
     def get_user_rate(self, obj):
         qs = Rate.objects.filter(to_user__username=obj.username)
@@ -66,6 +71,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    from events.api.serializers import TagSerializer, ShortEventSerializer
     email = serializers.EmailField(
             required=True,
             validators=[UniqueValidator(queryset=CustomUser.objects.all())]
@@ -115,11 +121,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_events_created(self, obj):
         qs = obj.event_author.all()
-        return ShortEventSerializer(qs, many=True, read_only=True).data
+        return self.ShortEventSerializer(qs, many=True, read_only=True).data
 
     def get_events_visited(self, obj):
         qs = obj.event_member.all()
-        return ShortEventSerializer(qs, many=True, read_only=True).data
+        return self.ShortEventSerializer(qs, many=True, read_only=True).data
 
     def get_user_rate(self, obj):
         qs = Rate.objects.filter(to_user__username=obj.username)
