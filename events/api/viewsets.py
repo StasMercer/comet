@@ -59,8 +59,7 @@ class EventViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'],)
     def get_members(self, request, pk):
         event = Event.objects.get(pk=pk)
-        is_current_member = True if Event.objects.filter(pk=pk, members=request.user) else False
-        return Response(ShortUserSerializer(event.members, many=True).data + [{'current_is_member': is_current_member}])
+        return Response(ShortUserSerializer(event.members, many=True).data)
 
     """just {"username":"your_username"}"""
     @action(detail=True, methods=['patch'])
