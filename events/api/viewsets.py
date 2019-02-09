@@ -59,7 +59,8 @@ class EventViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'],)
     def get_members(self, request, pk):
         event = Event.objects.get(pk=pk)
-        return Response(ShortUserSerializer(event.members, many=True).data)
+        is_current_member = True if Event.objects.filter(pk=pk, members=request.user) else False
+        return Response(ShortUserSerializer(event.members, many=True).data + [{'current_is_member': is_current_member}])
 
     """just {"username":"your_username"}"""
     @action(detail=True, methods=['patch'])
@@ -91,8 +92,8 @@ class EventViewSet(viewsets.ModelViewSet):
         except KeyError:
             return Response('no_appropriate_arguments')
 
-    @action(detail=False, methods=['get'])
-    def get_not_expired(self, request):
+    @action(detail=True, methods=['get'])
+    def is_follower (self, request):
         queryset = Event.objects.filter(date_expire__gt=date.today())
         page = self.paginate_queryset(queryset)
         if page is not None:

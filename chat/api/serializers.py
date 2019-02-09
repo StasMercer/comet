@@ -9,6 +9,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     user = ShortUserSerializer()
 
+
     class Meta:
         model = Message
         fields = ('event', 'user', 'text', 'date', 'is_read')
