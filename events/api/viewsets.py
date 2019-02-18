@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.core.exceptions import FieldError
+from django.db.models import QuerySet
 from django_filters import rest_framework as rest_filters
 
 from rest_framework import generics
@@ -24,13 +25,23 @@ class EventFilter(rest_filters.FilterSet):
     country = rest_filters.CharFilter(field_name='country')
     date_start = rest_filters.DateFilter(field_name='date_expire', lookup_expr='gte')
     date_end = rest_filters.DateFilter(field_name='date_expire', lookup_expr='lte')
+    following_in_events = rest_filters.BooleanFilter(method='filter_following')
+
 
     class Meta:
         model = Event
-        fields = ['tags', 'name', 'author', 'date_start', 'date_end', 'city', 'country']
+        fields = ['tags', 'name', 'author', 'date_start', 'date_end', 'city', 'country', 'following_in_events']
 
     def filter_tags(self, queryset, name, tags):
         return queryset.filter(tags__name__in=tags.split(','))
+
+    # return all events of current user where his following go
+    def filter_following(self, queryset, name, option):
+        if option:
+            user = self.request.user
+            return Event.objects.filter(members__username__in=user.following.all().values('username'))
+        else:
+            return Event.objects.all()
 
 class EventRegisterViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
@@ -44,14 +55,14 @@ class EventRegisterViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    http_method_names = ['get', 'patch']
+    http_method_names = ['get', 'patch', 'delete']
     filter_backends = (filters.SearchFilter, rest_filters.DjangoFilterBackend, )
     search_fields = ('name', 'author__username', )
     filter_class = EventFilter
 
 
     def get_permissions(self):
-        if self.request.method == 'PATCH' or self.request.method == 'PUT':
+        if self.request.method == 'PATCH' or self.request.method == 'PUT' or self.request.method == 'DELETE':
             return (IsOwner(),)
         else:
             return (IsAuthenticated(),)
